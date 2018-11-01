@@ -48,7 +48,7 @@
 <body>
   <div>
     <ul id="shopList">
-      <li data-id="shop1">
+      <li data-id="shop1" data-name="商品1">
         <div>
           <img src="./img/22_03.png" alt="">
         </div>
@@ -59,7 +59,7 @@
           <i>+</i>
         </div>
       </li>
-      <li data-id="shop2">
+      <li data-id="shop2" data-name="商品2">
         <div>
           <img src="./img/23_03.png" alt="">
         </div>
@@ -70,7 +70,7 @@
           <i>+</i>
         </div>
       </li>
-      <li data-id="shop3">
+      <li data-id="shop3" data-name="商品3">
         <div>
           <img src="./img/24_03.png" alt="">
         </div>
@@ -83,27 +83,66 @@
       </li>
     </ul>
   </div>
+  <div class="shopCar">
+    <ul>
+      <li>
+        <div>
+          <img src="./img/22_03.png" alt="">
+        </div>
+        <div>
+          <div class="shopName">
+            <span></span>
+          </div>
+          <div class="">
+            <div class="shopCarPrice">
+              ￥<span class="priceNum">148</span>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
   <script>
-    var shopList = [];
+    //添加购物车开始
+    var shopList;
     $("#shopList").click(function(e){
       var e = e || window.event;
       var target = e.target;
+      var flag = true;
       if(target.tagName == "I"){
         var id = target.parentNode.parentNode.dataset.id;
+        var name = target.parentNode.parentNode.dataset.name;
         var price =target.previousElementSibling.innerText;
         var obj = {
           "id":id,
-          "price":price
+          "name":name,
+          "price":price,
+          "num":1
         }
-
-        shopList.push(obj)
-        console.log(shopList)
+        shopList = JSON.parse(localStorage.getItem("shopList"));
+        if(shopList !=null){
+          for(var i = 0;i<shopList.length;i++){
+            if(shopList[i].id == obj.id){
+              shopList[i].num +=1;
+              flag= false;
+              break
+            }
+          }
+        }else{
+          shopList = [];
+        }
+        if(flag){
+          shopList.push(obj)
+        }
         localStorage.setItem("shopList",JSON.stringify(shopList))
         console.log(localStorage["shopList"]);
       }else{
         return;
       }
     })
+    //添加购物车结束
+
+    //
   </script>
 </body>
 </html>
