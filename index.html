@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>shopCar</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    ul li{
+      list-style: none;
+    }
+    body{
+      width: 900px;
+      margin: 0 auto;
+    }
+    #shopList{
+      width:100%;
+      height:300px;
+      text-align: center;
+    }
+    #shopList li{
+      float: left;
+      display: flex;
+      flex-direction: column;
+      margin:0 20px;
+    }
+    .description{
+      height: 30px;
+      line-height: 30px;
+      font-size: 24px;
+      padding:0 10px;
+    }
+    .description span{
+      float: left;
+    }
+    .description i{
+      font-style: normal;
+      float: right;
+      width:30px;
+      height:30px;
+      line-height: 25px;
+      border-radius: 50%;
+      background: pink;
+    }
+    .shopCar{
+      width: 900px;
+      background: pink;
+    }
+    .shopCar ul li{
+      height: 200px;
+      margin:5px 0;
+    }
+    .shopCar ul li div{
+      float: left;
+    }
+    .shopName,.priceAndNum{
+      width: 100%;
+    }
+    .shopCar ul li div.changeNum{
+      float: right;
+    }
+    .changeNum span,.num{
+      width:20px;
+      height:20px;
+      line-height: 20px;
+      float: left;
+      border: 1px solid #000;
+      font-size: 20px;
+      text-align: center;
+      margin: 0 5px;
+    }
+    .changeNum .del{
+      width:45px;
+    }
+    .point{
+      cursor: pointer;
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+  <div style="background: red">
+    <h3>商品列表</h3>
+    <ul id="shopList">
+      <li data-id="shop1" data-name="商品1">
+        <div>
+          <img src="./img/22_03.png" alt="">
+        </div>
+        <div class="description">
+          <span class="name">商品1</span>
+          <span>￥</span>
+          <span class="price">148</span>
+          <i class="point">+</i>
+        </div>
+      </li>
+      <li data-id="shop2" data-name="商品2">
+        <div>
+          <img src="./img/23_03.png" alt="">
+        </div>
+        <div class="description">
+          <span class="name">商品2</span>
+          <span>￥</span>
+          <span class="price">158</span>
+          <i class="point">+</i>
+        </div>
+      </li>
+      <li data-id="shop3" data-name="商品3">
+        <div>
+          <img src="./img/24_03.png" alt="">
+        </div>
+        <div class="description">
+          <span class="name">商品3</span>
+          <span>￥</span>
+          <span class="price">168</span>
+          <i class="point">+</i>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="shopCar">
+    <h3>购物车列表</h3>
+    <ul class="goodsInfo">
+      <!-- <li>
+        <div>
+          <img src="./img/22_03.png" alt="">
+        </div>
+        <div>
+          <div class="shopName">商品1</div>
+          <div class="priceAndNum">
+            <div class="shopCarPrice">
+              ￥<span class="priceNum">148</span>
+            </div>
+            <div class="changeNum" data-index="">
+              <span data-option="sub" >-</span>
+              <input class="num" type="text" readonly value="1">
+              <span data-option="add">+</span>
+              <span class="del" data-option="del">删除</span>
+            </div>
+          </div>
+        </div>
+      </li> -->
+    </ul>
+    <div>总计：￥<span class="count"></span></div>
+  </div>
+  <script>
+    //添加购物车开始
+    var shopList;
+    $("#shopList").click(function(e){
+      var e = e || window.event;
+      var target = e.target;
+      var flag = true;
+      if(target.tagName == "I"){
+        var id = target.parentNode.parentNode.dataset.id;
+        var name = target.parentNode.parentNode.dataset.name;
+        var price =target.previousElementSibling.innerText;
+        var src = target.parentNode.previousElementSibling.children[0].getAttribute('src');
+        var obj = {
+          "id":id,
+          "name":name,
+          "price":price,
+          "num":1,
+          "img":src
+        }
+        shopList = JSON.parse(localStorage.getItem("shopList"));
+        if(shopList !=null){
+          for(var i = 0;i<shopList.length;i++){
+            if(shopList[i].id == obj.id){
+              shopList[i].num +=1;
+              flag= false;
+              break
+            }
+          }
+        }else{
+          shopList = [];
+        }
+        if(flag){
+          shopList.push(obj)
+        }
+        localStorage.setItem("shopList",JSON.stringify(shopList))
+        // console.log(localStorage["shopList"]);
+        render();
+      }else{
+        return;
+      }
+    })
+    //添加购物车结束
+
+    //渲染购物车
+    $('.goodsInfo').click(function(e){
+      var e = e || window.event;
+      var target = e.target;
+      var i = target.parentNode.dataset.index;;
+      shopList = JSON.parse(localStorage.getItem("shopList"));
+      if(target.dataset.option == "add"){
+        shopList[i].num +=1;
+      }else if(target.dataset.option == "sub"){
+        if(shopList[i].num == 1){
+          alert("不能再少了，不想要的话可以点删除哦")
+        }else{
+          shopList[i].num -=1;
+        }
+      }else if(target.dataset.option == "del"){
+        shopList.splice(i,1);
+      }
+      localStorage.setItem("shopList",JSON.stringify(shopList));
+      render();
+    })
+    
+    function render(){
+      shopList = JSON.parse(localStorage.getItem("shopList"));
+      var str = '';
+      var count = 0; 
+      if(shopList == null|| shopList.length == 0){
+        str ='您的购物车里什么都没有呢';
+      }else{
+        for(var i =0;i<shopList.length;i++){
+          str += '<li><div><img src="'+shopList[i].img+'" alt=""></div><div><div class="shopName">'+shopList[i].name+'</div><div class="priceAndNum"><div class="shopCarPrice">￥<span class="priceNum">'+shopList[i].price+'</span></div><div class="changeNum" data-index="'+i+'"><span data-option="sub"  class="point">-</span><input class="num" type="text" readonly value="'+shopList[i].num+'"><span data-option="add" class="point">+</span><span class="del" data-option="del" class="point">删除</span></div></div></div></li>'
+          count += shopList[i].num * shopList[i].price;
+        }
+      }
+      $('.goodsInfo').html(str);
+      $('.count').html(count);
+    }
+    render();
+  </script>
+</body>
+</html>
